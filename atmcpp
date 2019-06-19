@@ -1,0 +1,362 @@
+#include <string>
+#include <conio.h>
+#include <fstream>
+#include <sstream>
+#include <cstdlib>
+#include <locale.h>
+#include <string.h>
+#include <iostream>
+using namespace std;
+
+class adminArayuz{
+	
+};
+
+class musteriArayuz{
+public:
+	int x;
+	musteriArayuz(int a){
+		x=a;
+		secim();
+	}
+		
+	int secim(){
+		char sec='y';
+		while (sec=='y'){
+			system("CLS");
+			cout << "MÜŞTERİ ARAYÜZÜ" << endl << endl;
+			cout << "1. PARA ÇEK" << endl;
+			cout << "2. PARA YATIR" << endl;
+			cout << "3. BAKİYE SORGU" << endl;
+			cout << "4. PARA GÖNDER" << endl;
+			cout << "5. ÇIKIŞ" << endl;
+			sec=getch();
+			
+			switch(sec){
+				case '1': {
+					paraCek();
+					break;
+				}
+				case '2': {
+					paraYatir();
+					break;
+				}
+				case '3': {
+					bakiyeSorgu();
+					break;
+				}
+				case '4': {
+					paraGonder();
+					break;
+				}
+				case '5': {
+					return 0;
+					break;
+				}
+				default: continue;
+			}
+		}
+	}
+	
+	void paraCek(){
+		int paraCikar, sayac=0, i=0;
+		int paraBu=bakiyeSorgu();
+		string aranan, guncel, readed;
+		
+		cout << "Çekeceğiniz Paranın Miktarını Girin: ";
+		cin >> paraCikar;
+		paraCikar=paraBu-paraCikar;
+		
+		ifstream dosyaOku("kullanicibilgileri\\bakiye.txt");
+		ofstream dosyaGuncelle("kullanicibilgileri\\bakiyetemp.txt");
+		
+		stringstream s1;
+		s1 << paraBu;
+		aranan = s1.str();
+		
+		stringstream s2;
+		s2 << paraCikar;
+		guncel = s2.str();
+		
+		do{
+			getline(dosyaOku, readed);
+			sayac++;
+			if(sayac!=x) dosyaGuncelle << readed << endl;
+			else dosyaGuncelle << guncel << endl;
+		}while(!dosyaOku.eof());
+		
+		dosyaOku.close();
+		dosyaGuncelle.close();
+		
+		remove("kullanicibilgileri\\bakiye.txt");
+		rename("kullanicibilgileri\\bakiyetemp.txt", "kullanicibilgileri\\bakiye.txt");
+	}
+	
+	void paraYatir(){
+		int paraEkle, sayac=0, i=0;
+		int paraBu=bakiyeSorgu();
+		string aranan, guncel, readed;
+		
+		cout << "Yatıracağınız Paranın Miktarını Girin: ";
+		cin >> paraEkle;
+		paraEkle+=paraBu;
+		
+		ifstream dosyaOku("kullanicibilgileri\\bakiye.txt");
+		ofstream dosyaGuncelle("kullanicibilgileri\\bakiyetemp.txt");
+		
+		stringstream s1;
+		s1 << paraBu;
+		aranan = s1.str();
+		
+		stringstream s2;
+		s2 << paraEkle;
+		guncel = s2.str();
+		
+		do{
+			getline(dosyaOku, readed);
+			sayac++;
+			if(sayac!=x) dosyaGuncelle << readed << endl;
+			else dosyaGuncelle << guncel << endl;
+		}while(!dosyaOku.eof());
+		
+		dosyaOku.close();
+		dosyaGuncelle.close();
+		
+		remove("kullanicibilgileri\\bakiye.txt");
+		rename("kullanicibilgileri\\bakiyetemp.txt", "kullanicibilgileri\\bakiye.txt");
+	}
+	
+	int bakiyeSorgu(){
+		system("CLS");
+		int number, s=0;
+		string bakiye;
+		
+		ifstream bakiyeSorgu;
+		bakiyeSorgu.open("kullanicibilgileri\\bakiye.txt",ios::in);
+		
+		while(!bakiyeSorgu.eof()){
+			getline(bakiyeSorgu,bakiye);
+			s++;
+			if(x==s){
+				istringstream iss (bakiye);
+				iss >> number;
+				cout << "BAKİYENİZ: "<< number << "TL";
+			}
+		}
+		return number;
+	}
+	
+	int gonderKisi(int g){
+		system("CLS");
+		int number, s=0;
+		string bakiye;
+		
+		ifstream bakiyeSorgu;
+		bakiyeSorgu.open("kullanicibilgileri\\bakiye.txt",ios::in);
+		
+		while(!bakiyeSorgu.eof()){
+			getline(bakiyeSorgu,bakiye);
+			s++;
+			if(g==s){
+				istringstream iss (bakiye);
+				iss >> number;
+			}
+		}
+		return number;
+	}
+	
+	void paraGonder(){
+		int kisi=kullaniciBul();
+		int pgonkisi=gonderKisi(kisi);
+		int benimparamik=bakiyeSorgu();
+		int paraEkle, guncelmiktarben, guncelmiktarkisi, sayac=0, i=0;
+		string eskiben, yeniben, eskikisi, yenikisi, readed;
+		
+		cout << "Göndereceğiniz Paranın Miktarını Girin: ";
+		cin >> paraEkle;
+	
+		guncelmiktarben=benimparamik-paraEkle;
+		guncelmiktarkisi=pgonkisi+paraEkle;
+		
+		ifstream dosyaOku("kullanicibilgileri\\bakiye.txt");
+		ofstream dosyaGuncelle("kullanicibilgileri\\bakiyetemp.txt");
+		
+		stringstream s1;
+		s1 << benimparamik;
+		eskiben = s1.str();
+		
+		stringstream s2;
+		s2 << guncelmiktarben;
+		yeniben = s2.str();
+		
+		stringstream s3;
+		s3 << pgonkisi;
+		eskikisi = s3.str();
+		
+		stringstream s4;
+		s4 << guncelmiktarkisi;
+		yenikisi = s4.str();
+	
+		do{
+			getline(dosyaOku, readed);
+			sayac++;
+			if(sayac==kisi || sayac==x){
+				if(sayac==kisi) dosyaGuncelle << yenikisi << endl;
+				if(sayac==x) dosyaGuncelle << yeniben << endl;
+			}
+			else dosyaGuncelle << readed << endl;
+		}while(!dosyaOku.eof());
+		
+		dosyaOku.close();
+		dosyaGuncelle.close();
+		
+		remove("kullanicibilgileri\\bakiye.txt");
+		rename("kullanicibilgileri\\bakiyetemp.txt", "kullanicibilgileri\\bakiye.txt");
+	}
+	
+	int kullaniciBul(){
+		system("CLS");
+		string aranacak, satir;
+		int k=0;
+		
+		ifstream dosyaAra("kullanicibilgileri\\tcno.txt");
+		cout << "Para Göndereceğiniz Kişinin T.C. Kimlik Numarasını Girin: ";
+		cin >> aranacak;
+	
+		while(!dosyaAra.eof()){
+			getline(dosyaAra, satir);
+			k++;
+			if(satir==aranacak) break;
+		}
+		return k;
+	}
+};
+
+class musteri{
+public:
+	char ad, soyad;
+	int yas,dtarih,sifresayac,i,ilkbakiye,ikincibakiye,sonbakiye,j=0,x=0,a=0,b=0,c=0,d=0;
+	string ilksifre,ikisifre,ilktc,ikitc;
+	
+	void giriskontrol(){
+		cout << "T.C. Kimlik Numaranızı Girin: ";
+		cin >> ilktc;
+		
+		ifstream TCkontrol;
+		TCkontrol.open("kullanicibilgileri\\tcno.txt",ios::in);
+		
+		while(!TCkontrol.eof()){
+			getline(TCkontrol,ikitc);
+			a++;
+			if(strcmp(ilktc.c_str(),ikitc.c_str())==0){
+				x++;
+				break;
+			}
+		}
+		cout << "Şifrenizi Girin: ";
+		cin >> ilksifre;
+		
+		ifstream sifreler;
+		sifreler.open("kullanicibilgileri\\sifreler.txt",ios::in);
+		
+		while(!sifreler.eof()){
+			getline(sifreler,ikisifre);
+			b++;
+			if(a==b){
+				if(strcmp(ilksifre.c_str(),ikisifre.c_str())==0){
+					j++;
+					break;
+				}
+			}
+		}
+		
+		sifreler.close();
+		TCkontrol.close();
+		
+		if(j>0 && x>0){
+			cout << "Giriş Başarılı.\n\n";
+			musteriArayuz zzz1(a);
+		}
+		else cout << "Giriş Başarısız";
+	}
+};
+
+class admin: public musteri{
+public:
+	void adminkontrol(){
+		int ja=0,xa=0,aa=0,ba=0,ca=0,da=0;
+		string ilksifrea,ikisifrea,ilktca,ikitca;
+		cout << "T.C. Kimlik Numaranızı Girin: ";
+		cin >> ilktca;
+		
+		ifstream TCkontrola;
+		TCkontrola.open("adminbilgisi\\admintc.txt",ios::in);
+		
+		while(!TCkontrola.eof()){
+			getline(TCkontrola,ikitca);
+			aa++;
+			if(strcmp(ilktca.c_str(),ikitca.c_str())==0){
+				xa++;
+				break;
+			}
+		}
+		cout << "Şifrenizi Girin: ";
+		cin >> ilksifrea;
+		
+		ifstream sifrelera;
+		sifrelera.open("adminbilgisi\\adminsifre.txt",ios::in);
+		
+		while(!sifrelera.eof()){
+			getline(sifrelera,ikisifrea);
+			ba++;
+			if(aa==ba){
+				if(strcmp(ilksifrea.c_str(),ikisifrea.c_str())==0){
+					ja++;
+					break;
+				}
+			}
+		}
+		if(xa>0 && ja>0) cout << "Giriş Başarılı.\n\n";
+		else cout << "Giriş Başarısız";
+	}
+	
+	void kayit(){
+		cout << "Müşterinin Adını Girin: ";
+		cin >> ad;
+		cout << "Müşterinin Soyadını Girin: ";
+		cin >> soyad;
+		cout << "Müşterinin Doğum Tarihini Girin: ";
+		cin >> dtarih;
+		yas= 2019 - dtarih;
+		cout << "Müşterinin T.C. Kimlik Numarasını Girin: ";
+		cin >> ilktc;
+		cout << "Müşterinin Şifresini Girin: ";
+		cin >> ikisifre;
+		cout << "Müşterinin Bakiyesini Girin: ";
+		cin >> ilkbakiye;
+	}
+	
+	void musterisil(){
+		
+	}
+};
+
+int main(){
+	setlocale(LC_ALL, "Turkish");
+	cout<< "Yönetici Girişi İçin \"1\"" << endl << "Müşteri Girişi İçin \"2\"";
+	char muscevap;
+	muscevap=getch();
+	
+	if(muscevap=='1'){
+		system("CLS");
+		admin a1;
+		a1.adminkontrol();
+	}
+	else{
+		if(muscevap=='2'){
+			system("CLS");
+			musteri m1;
+			m1.giriskontrol();
+		}
+	}
+}
